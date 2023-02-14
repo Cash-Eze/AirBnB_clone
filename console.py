@@ -23,16 +23,16 @@ class HBNBCommand(cmd.Cmd):
     file = None
 
     def do_EOF(self, args):
-	"""define EOF command- quit program"""
+        """define EOF command- quit program"""
         return True
 
     def do_quit(self, args):
-	"""define quit command- quit program"""
-	return True
+        """define quit command- quit program"""
+        return True
 
     def emptyline(self):
         """emptyline shouldn't exexute anything"""
-	pass
+        pass
     def do_create(self, arg):
         """creates and saves new instance of BaseModel. Prints id"""
         if arg == "":
@@ -43,7 +43,7 @@ class HBNBCommand(cmd.Cmd):
             b1 = eval(arglist[0])()
             b1.save()
             print(b1.id)
-        except:
+        except IOError :
             print("** class doesn't exist **")
             return
 
@@ -56,7 +56,7 @@ class HBNBCommand(cmd.Cmd):
         arglist = parse(arg)
         try:
             b1 = eval(arglist[0])()
-        except:
+        except IOError :
             print("** class doesn't exist **")
             return
         if len(arglist) == 1:
@@ -78,7 +78,7 @@ class HBNBCommand(cmd.Cmd):
         arglist = parse(arg)
         try:
             b1 = eval(arglist[0])()
-        except:
+        except IOError :
             print("** class doesn't exist **")
             return
         if len(arglist) == 1:
@@ -108,7 +108,7 @@ class HBNBCommand(cmd.Cmd):
             return
         try:
             model = eval(arglist[0])()
-        except:
+        except IOError:
             print("** class doesn't exist **")
             return
         objlist = []
@@ -126,7 +126,7 @@ class HBNBCommand(cmd.Cmd):
             return
         try:
             model = eval(arglist[0])()
-        except:
+        except IOError:
             print("** class doesn't exist **")
             return
         if len(arglist) == 1:
@@ -169,7 +169,7 @@ class HBNBCommand(cmd.Cmd):
         arglist = parse(arg)
         try:
             b1 = eval(arglist[0])()
-        except:
+        except IOError:
             print("** class doesn't exist **")
             return
         objdict = storage.all()
@@ -210,5 +210,7 @@ class HBNBCommand(cmd.Cmd):
                     return arg_dict[command[0]](call)
         print("*** Unknown syntax: {}".format(line))
         return False
+
+
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
