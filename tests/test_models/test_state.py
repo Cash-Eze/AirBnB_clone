@@ -1,88 +1,162 @@
-#!/usr/bin/python3
-'''Unittest for State class'''
-from models.state import State
-from models.base_model import BaseModel
-from datetime import datetime
+#!/usr/bin/python
+"""unit testing for state.py"""
+
+
+import sys
 import unittest
+import inspect
+import io
+import pep8
+from datetime import datetime
+from contextlib import redirect_stdout
+from models.state import State
 
 
-class TestStateClass(unittest.TestCase):
-        '''This class allows for testing of State class'''
+class TestState(unittest.TestCase):
+    """
+    class for testing State class' methods
+    """
 
-        def setUp(self):
-                '''Sets up State instance for testing'''
-                self.state1 = State()
+    @classmethod
+    def setUpClass(cls):
+        """
+        Set up class method for the doc tests
+        """
+        cls.setup = inspect.getmembers(State, inspect.isfunction)
 
-        def tearDown(self):
-                '''Tears down State testing'''
-                pass
+    def test_pep8_conformance_State(self):
+        """
+        Test that state.py file conform to PEP8
+        """
+        pep8style = pep8.StyleGuide(quiet=True)
+        result = pep8style.check_files(['models/state.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-        def test_type(self):
-                '''Tests type of State'''
-                self.assertEqual(type(self.state1), State)
+    def test_pep8_conformance_test_state(self):
+        """
+        Test that test_state.py file conform to PEP8
+        """
+        pep8style = pep8.StyleGuide(quiet=True)
+        result = pep8style.check_files(['tests/test_models/test_state.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-        def test_instance(self):
-                '''Tests if instance inherits from BaseModel'''
-                self.assertIsInstance(self.state1, BaseModel)
+    def test_module_docstring(self):
+        """
+        Tests if module docstring documentation exist
+        """
+        self.assertTrue(len(State.__doc__) >= 1)
 
-        def test_state_id(self):
-                '''Tests if has email attribute'''
-                s1 = State()
-                self.assertEqual(type(s1.id), str)
-                self.assertTrue(hasattr(s1, "id"))
+    def test_class_docstring(self):
+        """
+        Tests if class docstring documentation exist
+        """
+        self.assertTrue(len(State.__doc__) >= 1)
 
-        def test_state_created(self):
-                '''Tests created_at for State'''
-                s1 = State()
-                self.assertEqual(type(s1.created_at), type(datetime.now()))
-                self.assertTrue(hasattr(self.state1, "created_at"))
+    def test_func_docstrings(self):
+        """
+        Tests if methods docstring documntation exist
+        """
+        for func in self.setup:
+            self.assertTrue(len(func[1].__doc__) >= 1)
 
-        def test_state_updated(self):
-                '''Tests updated_at for State'''
-                s1 = State()
-                self.assertEqual(type(s1.updated_at), type(datetime.now()))
-                self.assertTrue(hasattr(s1, "updated_at"))
+    def setUp(self):
+        """set up method for State class
+        """
+        self.S = State()
 
-        def test_state_name(self):
-                '''Tests name for State'''
-                s1 = State()
-                self.assertTrue(hasattr(s1, "name"))
-                self.assertEqual(type(s1.name), str)
+    def tearDown(self):
+        """initialized method for State class
+        """
+        self.S = None
 
-        def test_strmethod(self):
-                '''Tests str method'''
-                s1 = State()
-                self.assertEqual(type(str(s1)), str)
+    def test_type(self):
+        """test method for type testing of state
+        """
+        self.assertIsInstance(self.S, State)
+        self.assertEqual(type(self.S), State)
+        self.assertEqual(issubclass(self.S.__class__, State), True)
+        self.assertEqual(isinstance(self.S, State), True)
 
-        def test_strmethod_clsname(self):
-                '''Tests if class name in str'''
-                s1 = State()
-                self.assertEqual('[State]' in str(s1), True)
+    def test_name_type(self):
+        """tests the type of state attribute
+        """
+        self.assertEqual(type(State.name), str)
 
-        def test_strmethod_id(self):
-                '''Tests if id is in str representation'''
-                s1 = State()
-                self.assertEqual('id' in str(s1), True)
+    def test_string_return(self):
+        """tests the string method
+        """
+        string = str(self.S)
+        Sid = "[{}] ({})".format(self.S.__class__.__name__,
+                                 self.S.id)
+        test = Sid in string
+        self.assertEqual(True, test)
+        test = "updated_at" in string
+        self.assertEqual(True, test)
+        test = "created_at" in string
+        self.assertEqual(True, test)
+        test = "datetime.datetime" in string
+        self.assertEqual(True, test)
 
-        def test_str_created_state(self):
-                '''Tests if created_at is in str'''
-                s1 = State()
-                self.assertEqual('created_at' in str(s1), True)
+    def test_to_dict(self):
+        """tests to_dict method
+        """
+        my_dict = self.S.to_dict()
+        self.assertEqual(str, type(my_dict['created_at']))
+        self.assertEqual(my_dict['created_at'],
+                         self.S.created_at.isoformat())
+        self.assertEqual(datetime, type(self.S.created_at))
+        self.assertEqual(my_dict['__class__'],
+                         self.S.__class__.__name__)
+        self.assertEqual(my_dict['id'], self.S.id)
 
-        def test_str_updated_state(self):
-                '''Tests if updated_at is in str'''
-                s1 = State()
-                self.assertEqual('updated_at' in str(s1), True)
+    def test_to_dict_more(self):
+        """tests to_dict method
+        """
+        my_dict = self.S.to_dict()
+        created_at = my_dict['created_at']
+        time = datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%S.%f")
+        self.assertEqual(self.S.created_at, time)
 
-        def test_str_output_state(self):
-                '''Tests for expected output'''
-                s1 = State()
-                output = "[{}] ({}) {}".format(
-                    s1.__class__.__name__,
-                    s1.id,
-                    s1.__dict__
-                )
-                self.assertEqual(output, str(s1))
+    def test_from_dict_basic(self):
+        """tests from_dict method
+        """
+        my_dict = self.S.to_dict()
+        S1 = self.S.__class__(**my_dict)
+        self.assertEqual(S1.id, self.S.id)
+        self.assertEqual(S1.updated_at, self.S.updated_at)
+        self.assertEqual(S1.created_at, self.S.created_at)
+        self.assertEqual(S1.__class__.__name__,
+                         self.S.__class__.__name__)
 
-if __name__ == "__main__":
-        unittest.main()
+    def test_from_dict_hard(self):
+        """test from_dict method for class objects
+        """
+        self.S.name = 'Meco'
+        my_dict = self.S.to_dict()
+        self.assertEqual(my_dict['name'], 'Meco')
+        S1 = self.S.__class__(**my_dict)
+        self.assertEqual(S1.created_at, self.S.created_at)
+
+    def test_unique_id(self):
+        """test for unique ids for class objects
+        """
+        S1 = self.S.__class__()
+        S2 = self.S.__class__()
+        self.assertNotEqual(self.S.id, S1.id)
+        self.assertNotEqual(self.S.id, S2.id)
+
+    def test_id_type_string(self):
+        """test id of the class is a string
+        """
+        self.assertEqual(type(self.S.id), str)
+
+    def test_updated_time(self):
+        """test that updated time gets updated
+        """
+        time1 = self.S.updated_at
+        self.S.save()
+        time2 = self.S.updated_at
+        self.assertNotEqual(time1, time2)
+        self.assertEqual(type(time1), datetime)
