@@ -9,7 +9,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
-from os import path
+import os
 
 
 class FileStorage:
@@ -54,7 +54,7 @@ class FileStorage:
                 for key, v in dictionaryofdictionaries.items():
                     if v["__class__"] in classes:
                         self.__objects[key] = classes[v["__class__"]](**v)
-        except:
+        except OSError:
             pass
 
     def reset(self):
