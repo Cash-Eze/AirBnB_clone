@@ -33,6 +33,7 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """emptyline shouldn't exexute anything"""
         pass
+    
     def do_create(self, arg):
         """creates and saves new instance of BaseModel. Prints id"""
         if arg == "":
