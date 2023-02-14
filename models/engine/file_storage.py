@@ -23,18 +23,18 @@ class FileStorage:
 
     def all(self):
         """returns the dictionary __objects"""
-        return self.__objects
+        return FileStorage.__objects
 
     def new(self, obj):
         """sets in __objects the obj"""
-        self.__objects["{}.{}".format(obj.__class__.__name__, obj.id)] = obj
+        FileStorage.__objects["{}.{}".format(obj.__class__.__name__, obj.id)] = obj
 
     def save(self):
         """serializes __objects dictionary to the JSON file"""
         dictionary = {}
-        for key, value in self.__objects.items():
+        for key, value in FileStorage.__objects.items():
             dictionary[key] = value.to_dict()
-        with open(self.__file_path, "w", encoding='utf-8') as w:
+        with open(FileStorage.__file_path, "w", encoding='utf-8') as w:
             json.dump(dictionary, w)
 
     def reload(self):
@@ -47,13 +47,14 @@ class FileStorage:
             "City": City,
             "Amenity": Amenity,
             "Place": Place,
-            "Review": Review}
+            "Review": Review
+        }
         try:
-            with open(self.__file_path, "r") as r:
+            with open(FileStorage.__file_path, "r") as r:
                 dictionaryofdictionaries = json.load(r)
                 for key, v in dictionaryofdictionaries.items():
                     if v["__class__"] in classes:
-                        self.__objects[key] = classes[v["__class__"]](**v)
+                        FileStorage.__objects[key] = classes[v["__class__"]](**v)
         except OSError:
             pass
 
