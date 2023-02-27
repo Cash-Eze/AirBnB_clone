@@ -1,0 +1,16 @@
+.places{
+    font-size: 15px;
+    grid-column-start:3;
+    grid-row-start: 3;
+    position: absolute;
+}
+
+.places article{
+    padding: 20px;
+    margin: 20px;
+    width: 300px;
+    border: #FF5A5F solid 1px;
+    text-align: center;
+    float: left;
+    border-radius: 4px;
+}
