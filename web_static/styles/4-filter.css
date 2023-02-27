@@ -1,0 +1,26 @@
+.filters{
+    background-color: white;
+    height: 70px;
+    width: 100%;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns:  repeat(12, 1fr);
+}
+
+.filters button:hover {
+    opacity: 0.9;
+}
+
+.filters button{
+    font-size: 18px;
+    background-color:  #FF5A5F;
+    color: #FFFFFF;
+    height: 48px;
+    border-style: none;
+    grid-column: 10/13;
+    right: 30px;
+    position: relative;
+    align-self: center;
+    text-align:center;
+}
